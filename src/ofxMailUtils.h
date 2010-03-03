@@ -19,6 +19,7 @@
 #include "Poco/Net/MailMessage.h"
 #include "Poco/Net/POP3ClientSession.h"
 #include "Poco/Net/SMTPClientSession.h"
+#include "Poco/Net/FilePartSource.h"
 
 #include "Poco/StreamCopier.h"
 #include "Poco/Path.h"
@@ -56,6 +57,7 @@ struct ofxMailMessage{
 		subject = mailMessage.getSubject();
 		contentType = mailMessage.getContentType();
 		content = mailMessage.getContent();
+		//TODO: get attachments from poco message
 	}
 
 	ofxMailMessage(){
@@ -78,6 +80,9 @@ struct ofxMailMessage{
 		for(unsigned int i=0;i<bcc.size();i++){
 			message.addRecipient(Poco::Net::MailRecipient(Poco::Net::MailRecipient::PRIMARY_RECIPIENT,bcc[i]));
 		}
+		for(unsigned int i=0; i < attachmentPaths.size(); i++){
+			message.addAttachment(attachmentPaths[i], new Poco::Net::FilePartSource(ofToDataPath(attachmentPaths[i], true)));
+		}
 		return message;
 	}
 
@@ -90,6 +95,7 @@ struct ofxMailMessage{
 	vector<string> recipients;
 	vector<string> cc;
 	vector<string> bcc;
+	vector<string> attachmentPaths;
 };
 
 
@@ -105,6 +111,7 @@ struct ofxMailAccount{
 	unsigned int port;
 	vector<int> alreadyReaded;
 };
+
 class ofxPop3ClientUtils : public ofxThread{
 
 	public:
