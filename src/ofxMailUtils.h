@@ -20,6 +20,7 @@
 #include "Poco/Net/POP3ClientSession.h"
 #include "Poco/Net/SMTPClientSession.h"
 #include "Poco/Net/FilePartSource.h"
+#include "Poco/Net/StringPartSource.h"
 
 #include "Poco/StreamCopier.h"
 #include "Poco/Path.h"
@@ -70,7 +71,7 @@ struct ofxMailMessage{
 		message.setSender(sender);
 		message.setSubject(subject);
 		message.setContentType(contentType);
-		message.setContent(content);
+		message.addContent(new Poco::Net::StringPartSource(content));
 		for(unsigned int i=0;i<recipients.size();i++){
 			message.addRecipient(Poco::Net::MailRecipient(Poco::Net::MailRecipient::PRIMARY_RECIPIENT,recipients[i]));
 		}
